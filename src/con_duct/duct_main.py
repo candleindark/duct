@@ -31,9 +31,7 @@ SYSTEM = platform.system()
 lgr = logging.getLogger("con-duct")
 DEFAULT_LOG_LEVEL = os.environ.get("DUCT_LOG_LEVEL", "INFO").upper()
 
-DUCT_OUTPUT_PREFIX = os.getenv(
-    "DUCT_OUTPUT_PREFIX", ".duct/logs/{datetime_filesafe}-{pid}_"
-)
+DUCT_OUTPUT_PREFIX = os.getenv("DUCT_OUTPUT_PREFIX", ".duct/logs/{datetime}-{pid}_")
 ENV_PREFIXES = ("PBS_", "SLURM_", "OSG")
 SUFFIXES = {
     "stdout": "stdout",
@@ -179,7 +177,12 @@ class LogPaths:
     def create(cls, output_prefix: str, pid: None | int = None) -> LogPaths:
         datetime_filesafe = datetime.now().strftime("%Y.%m.%dT%H.%M.%S")
         formatted_prefix = output_prefix.format(
-            pid=pid, datetime_filesafe=datetime_filesafe
+            pid=pid,
+            datetime=datetime_filesafe,
+            # Use of the `datetime_filesafe` format field is deprecated.
+            # The setting of it here is to provide for backwards compatibility
+            # It should be removed eventually
+            datetime_filesafe=datetime_filesafe,
         )
         return cls(
             stdout=f"{formatted_prefix}{SUFFIXES['stdout']}",
